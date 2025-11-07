@@ -41,3 +41,6 @@ env/
 /checkpoints/
 /model_cache/
 /data/
+
+# macOS / Operating System
+.DS_Store
