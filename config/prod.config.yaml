@@ -1,0 +1,8 @@
+max_files_to_process: null
+
+logging:
+  level: "INFO"
+
+diarizer:
+  asr_model_name: "large-v3"
+  batch_size: 32
