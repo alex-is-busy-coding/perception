@@ -12,7 +12,7 @@ This project will analyze dynamic time-series of video, audio, and physiological
 
 This project is divided into two main computational modules. Please refer to their dedicated documentation for detailed information on model choices and architectural decisions.
 
-### [Audio Processing Pipeline](src/model_training/README.md)
+### [Audio Processing Pipeline](src/audio_processor/README.md)
 
 Details the 3-stage pipeline: Speech Enhancement (**SepFormer**) → Diarization (**WhisperX/Pyannote**) → Feature Extraction (**OpenSMILE**).
 
@@ -26,7 +26,7 @@ Analyzes visual cues using state-of-the-art computer vision models:
 
 - **Body Pose:** Uses **PARE** (Part Attention Regressor) for 3D body mesh and pose estimation.
 
-### [Unsupervised Representation Learning](src/audio_processor/README.md)
+### [Unsupervised Representation Learning](src/model_training/README.md)
 
 Explains the 1D Convolutional Autoencoder and the "Hybrid Masked Pooling" strategy used to learn fixed-length participant embeddings from variable-length audio.
 
