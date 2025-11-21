@@ -10,7 +10,6 @@ dist/
 *.egg-info/
 
 # Environments
-# Never commit virtual environments or secret files
 .venv
 venv/
 env/
@@ -30,16 +29,15 @@ env/
 .ipynb_checkpoints
 
 # VS Code
-# Ignore local workspace settings/state
 .vscode/*
-# But DO commit extensions recommendations
 !.vscode/extensions.json
 
-# Project-Specific Artifacts
 # Ignore ML logs, checkpoints, and cached data
 /lightning_logs/
+/tensorboard_logs/
 /checkpoints/
 /model_cache/
+/pretrained_models/
 /data/
 
 # macOS / Operating System
