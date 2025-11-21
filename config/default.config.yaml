@@ -1,0 +1,31 @@
+input_directory: "data/raw"
+output_directory: "data"
+
+logging:
+  level: "INFO"
+
+enhancer:
+  model_source: "speechbrain/sepformer-wham16k-enhancement"
+  savedir: "pretrained_models/sepformer-wham16k-enhancement"
+  device: null
+
+diarizer:
+  asr_model_name: "large-v3"
+  diarize_model_name: "pyannote/speaker-diarization-3.1"
+  batch_size: 16
+
+training:
+  batch_size: 16
+  num_epochs: 50
+  learning_rate: 0.001
+  latent_dim: 64
+  checkpoint_dir: "checkpoints"
+
+video:
+  enable_expression: true
+  enable_identity: true
+  enable_pose: true
+  insightface_model_name: "buffalo_l"
+  pare_model_checkpoint: "pretrained_models/pare/pare_checkpoint.ckpt"
+
+max_files_to_process: null
