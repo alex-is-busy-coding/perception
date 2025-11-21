@@ -1,20 +1,32 @@
-process:
-	@echo "Processing raw audio data..."
-	@if [ -z "$${HUGGING_FACE_HUB_TOKEN}" ]; then \
-		echo "Error: HUGGING_FACE_HUB_TOKEN is not set."; \
-		echo "Please set it (e.g., export HUGGING_FACE_HUB_TOKEN='your_token')"; \
-		exit 1; \
-	fi
-	uv run main.py
+RUN = uv run
+ENV = PYTHONPATH=.
+
+.PHONY: process-audio process-video process train visualize clean tensorboard
+
+process-audio:
+	@echo "Processing audio data..."
+	$(ENV) $(RUN) scripts/process_audio.py
+
+process-video:
+	@echo "Processing video data..."
+	$(ENV) $(RUN) scripts/process_video.py
+
+process: process-audio process-video
 
 train:
 	@echo "Training model..."
-	uv run "model_training/train.py"
+	$(ENV) $(RUN) scripts/train.py
+
+visualize:
+	@echo "Generating embeddings and visualization..."
+	$(ENV) $(RUN) scripts/visualize.py
+
+tensorboard:
+	@echo "Starting TensorBoard..."
+	$(ENV) $(RUN) tensorboard --logdir=tensorboard_logs/
 
 clean:
 	@echo "Cleaning up..."
 	rm -rf lightning_logs/
-
-tensorboard:
-	@echo "Starting TensorBoard..."
-	uv run tensorboard --logdir=lightning_logs/
+	rm -rf tensorboard_logs/
+	find . -type d -name "__pycache__" -exec rm -rf {} +
