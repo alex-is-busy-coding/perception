@@ -1,0 +1,8 @@
+max_files_to_process: 2
+
+logging:
+  level: "DEBUG"
+
+diarizer:
+  asr_model_name: "small"
+  batch_size: 4
