@@ -8,6 +8,28 @@ People spontaneously form impressions of one another, and these impressions shap
 
 This project will analyze dynamic time-series of video, audio, and physiological recordings of participants during social interactions at different locations in New York City. We will use deep learning and recurrent neural networks to understand how people use this rich, multimodal information to form impressions.
 
+## 📖 Architecture & Methodology
+
+This project is divided into two main computational modules. Please refer to their dedicated documentation for detailed information on model choices and architectural decisions.
+
+### [Audio Processing Pipeline](src/model_training/README.md)
+
+Details the 3-stage pipeline: Speech Enhancement (**SepFormer**) → Diarization (**WhisperX/Pyannote**) → Feature Extraction (**OpenSMILE**).
+
+### [Video Processing Pipeline](src/video_processor/README.md)
+
+Analyzes visual cues using state-of-the-art computer vision models:
+
+- **Facial Expressions:** Uses **Py-Feat** to extract Action Units (AUs) and emotions.
+
+- **Identity:** Uses **InsightFace** to generate facial embedding vectors.
+
+- **Body Pose:** Uses **PARE** (Part Attention Regressor) for 3D body mesh and pose estimation.
+
+### [Unsupervised Representation Learning](src/audio_processor/README.md)
+
+Explains the 1D Convolutional Autoencoder and the "Hybrid Masked Pooling" strategy used to learn fixed-length participant embeddings from variable-length audio.
+
 ## 🔬 About the IMPACT Lab
 
 This project is conducted at the **IMPression in ACTion (IMPACT) Lab** at Columbia University.
@@ -19,7 +41,7 @@ The lab investigates how people form impressions of others—from "dubious short
 ## 🧑‍💻 Project Team
 
 * **Principal Investigator:** [Dr. Chujun Lin](https://psychology.columbia.edu/content/chujun-lin) [📧](mailto:cl4767@columbia.edu)
-* **Developer:** Alexander Vassilev [📧](mailto:av3341@columbia.edu)
+* **Developer:** [Alexander Vassilev](https://github.com/alex-is-busy-coding) [📧](mailto:av3341@columbia.edu)
 
 ## ⚖️ License
 
@@ -56,23 +78,68 @@ This project uses **[uv](https://docs.astral.sh/uv/)** for high-speed Python env
     uv pip install -e .
     ```
 
+### ☁️ Run on Google Colab
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/alex-is-busy-coding/perception/blob/main/notebooks/colab_runner.ipynb)
+
+If you do not have a local GPU, you can run this pipeline directly in the browser using [Google Colab](https://colab.research.google.com/).
+
+  1. Click the badge above to open the notebook.
+
+  2. Set your `Runtime` to `T4 GPU` or some other GPU of your choice (`Runtime` > `Change runtime type`).
+
+  3. Follow the instructions in the notebook to set up the environment and process your data.
+
+### 🔑 Pyannote Model Access (Required)
+This pipeline uses [**Pyannote**](https://huggingface.co/pyannote) for speaker diarization. Because these models are gated, you must:
+
+  1. **[Create a Hugging Face account](https://huggingface.co/join)** if you don't have one.
+
+  2. **Accept the user conditions** on the following model pages:
+      * [pyannote/speaker-diarization-3.1](https://huggingface.co/pyannote/speaker-diarization-3.1)
+      * [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0)
+
+  3. **Create an Access Token** (Read role) in [your Hugging Face settings](https://huggingface.co/settings/tokens).
+
+  4. **Set the token** as an environment variable (`HF_TOKEN`) before running the pipeline (see **Configuration** below).
+
 You're all set\! You're now ready to run the project.
 
-## 🏃‍♀️ Usage
-  * **To process raw audio data:** This runs the main.py script, which will transcribe audio, extract features, and save the final CSV to `data/features/`.
+## 🔨 Usage
+  * **To process raw audio data:** This runs the `scripts/process.py` pipeline, which enhances audio, diarizes speakers, and extracts acoustic features.
+
+    By default, it runs in **dev mode** (processing a limited number of files using `config/dev.config.yaml`).
 
     ```bash
+    # Run in dev mode
     make process
+
+    # Run in production mode (processes all files)
+    APP_ENV=prod make process
     ```
 
-  * **To train the model:**
+    Outputs are saved to `data/`:
+      - `transcripts/`: CSVs with speaker diarization and text.
+
+      - `diarization_plots/`: Visual timelines of speaker turns (PNG).
+
+      - `features/`: Extracted acoustic features (OpenSMILE).
+
+      - `enhanced/`: Denoised audio files.
+
+  * **To train the model:** Trains a convolutional autoencoder on the extracted acoustic features. Checkpoints are saved to `checkpoints/`.
 
     ```bash
     make train
     ```
 
-  * **To view results in TensorBoard:**
-    This will start a web server, usually at `http://localhost:6006`.
+  * **To visualize embeddings:** Generates latent embeddings from the best model checkpoint and saves them for TensorBoard visualization.
+
+    ```bash
+    make visualize
+    ```
+
+  * **To visualize embeddings:** This will start a web server, usually at `http://localhost:6006`. Open the **Projector** tab to see the 3D embedding space.
 
     ```bash
     make tensorboard
