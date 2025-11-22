@@ -10,7 +10,7 @@ This project will analyze dynamic time-series of video, audio, and physiological
 
 ## 📖 Architecture & Methodology
 
-This project is divided into two main computational modules. Please refer to their dedicated documentation for detailed information on model choices and architectural decisions.
+This project is divided into three main computational modules. Please refer to their dedicated documentation for detailed information on model choices and architectural decisions.
 
 ### [Audio Processing Pipeline](src/audio_processor/README.md)
 
@@ -72,7 +72,7 @@ This project uses **[uv](https://docs.astral.sh/uv/)** for high-speed Python env
     ```
 
 4.  **Install project dependencies:**
-    This will install all required packages from your `pyproject.toml` or `requirements.txt` file into the `.venv`.
+    This will install all required packages from your `pyproject.toml` file into the `.venv`.
 
     ```bash
     uv pip install -e .
@@ -103,50 +103,69 @@ This pipeline uses [**Pyannote**](https://huggingface.co/pyannote) for speaker d
 
   4. **Set the token** as an environment variable (`HF_TOKEN`) before running the pipeline (see **Configuration** below).
 
-You're all set\! You're now ready to run the project.
+You're all set! You're now ready to run the project.
+
+## ⚙️ Configuration
+This project uses **Pydantic Settings** to manage configuration via a layered approach, combining YAML files and environment variables.
+
+Configuration files are located in the `config/` directory:
+
+- `config/default.config.yaml`: Base settings shared across all environments.
+
+- `config/dev.config.yaml`: Overrides for local development.
+
+- `config/prod.config.yaml`: Overrides for production runs.
+
+The application defaults to the `dev` environment. To switch to production (or another custom environment), set the `APP_ENV` environment variable. This tells the system which YAML file to load.
 
 ## 🔨 Usage
-  * **To process raw audio data:** This runs the `scripts/process.py` pipeline, which enhances audio, diarizes speakers, and extracts acoustic features.
+* **To process raw audio data:** This runs the `scripts/process.py` pipeline, which enhances audio, diarizes speakers, and extracts acoustic features.
 
-    By default, it runs in **dev mode** (processing a limited number of files using `config/dev.config.yaml`).
+  By default, it runs in **dev mode** (processing a limited number of files using `config/dev.config.yaml`).
 
-    ```bash
-    # Run in dev mode
-    make process
+  ```bash
+  # Run in dev mode
+  make process
 
-    # Run in production mode (processes all files)
-    APP_ENV=prod make process
-    ```
+  # Run in production mode (processes all files)
+  APP_ENV=prod make process
+  ```
 
-    Outputs are saved to `data/`:
-      - `transcripts/`: CSVs with speaker diarization and text.
+  Outputs are saved to `data/`:
+    - `video/expression/`: CSVs with Action Units.
 
-      - `diarization_plots/`: Visual timelines of speaker turns (PNG).
+    - `video/identity/`: CSVs with facial identity embeddings.
 
-      - `features/`: Extracted acoustic features (OpenSMILE).
+    - `video/pose/`: 3D body meshes and pose parameters.
 
-      - `enhanced/`: Denoised audio files.
+    - `transcripts/`: CSVs with speaker diarization and text.
 
-  * **To train the model:** Trains a convolutional autoencoder on the extracted acoustic features. Checkpoints are saved to `checkpoints/`.
+    - `diarization_plots/`: Visual timelines of speaker turns (PNG).
 
-    ```bash
-    make train
-    ```
+    - `features/`: Extracted acoustic features (OpenSMILE).
 
-  * **To visualize embeddings:** Generates latent embeddings from the best model checkpoint and saves them for TensorBoard visualization.
+    - `enhanced/`: Denoised audio files.
 
-    ```bash
-    make visualize
-    ```
+* **To train the model:** Trains a convolutional autoencoder on the extracted acoustic features. Checkpoints are saved to `checkpoints/`.
 
-  * **To visualize embeddings:** This will start a web server, usually at `http://localhost:6006`. Open the **Projector** tab to see the 3D embedding space.
+  ```bash
+  make train
+  ```
 
-    ```bash
-    make tensorboard
-    ```
+* **To visualize embeddings:** Generates latent embeddings from the best model checkpoint and saves them for TensorBoard visualization.
 
-  * **To clean up log files:**
+  ```bash
+  make visualize
+  ```
 
-    ```bash
-    make clean
-    ```
+* **To visualize embeddings:** This will start a web server, usually at `http://localhost:6006`. Open the **Projector** tab to see the 3D embedding space.
+
+  ```bash
+  make tensorboard
+  ```
+
+* **To clean up log files:**
+
+  ```bash
+  make clean
+  ```
